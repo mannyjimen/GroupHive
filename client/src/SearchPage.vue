@@ -1,13 +1,47 @@
-<script setup lang="ts">import { ref } from 'vue'
-    import { createApp } from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue'
 
-    const searchPage = ref('search')</script>
+// reactive variable to store the search input
+const searchQuery = ref('')
+</script>
 
 <template>
-    <div :class="searchPage">Add contents here</div>
+  <div class="searchPage">
+    <input
+      type="text"
+      v-model="searchQuery"
+      placeholder="Search..."
+      class="searchBar"
+    />
+    <div class="results">
+      <p v-if="!searchQuery">Type something to search...</p>
+      <p v-else>Searching for: "{{ searchQuery }}"</p>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-    .search {
-    }
+.searchPage {
+  background-color: #fffacd;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  border: 5px solid purple;
+  border-radius: 10px;
+}
+
+.searchBar {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid purple;
+  border-radius: 5px;
+  outline: none;
+}
+
+.results {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #333;
+}
 </style>

@@ -32,6 +32,13 @@
         signUpVar.value = true
         searchPage.value = false
     }
+    function goToSearch() 
+    {
+    searchPage.value = true
+    main.value = false
+    signInVar.value = false
+    signUpVar.value = false
+    }
 </script>
 
 <template>
@@ -40,6 +47,7 @@
         <div class="sign">
             <button class='sign1' @click="signIn">Sign In</button>
             <button class='sign2' @click="signUp">Sign Up</button>
+            <button class='searchBtn' @click="goToSearch">🔍</button>
         </div>
     </div>
     <div class="line"></div>
@@ -47,6 +55,7 @@
     <SignIn v-else-if="signInVar" @loggingIn="logIn"/>
     <SignUp v-else-if="signUpVar" />
     <SignUp v-else-if="searchPage" />
+    <SearchPage/>
 </template>
 
 <style scoped>
@@ -65,5 +74,10 @@
     background: black;
     height: 1px;
     width: 100%;
+}
+.searchBtn {
+    margin-left: 5px;
+    font-size: 18px;
+    cursor: pointer;
 }
 </style>
