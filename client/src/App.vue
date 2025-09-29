@@ -54,8 +54,8 @@
     <HomePage v-if="main" />
     <SignIn v-else-if="signInVar" @loggingIn="logIn"/>
     <SignUp v-else-if="signUpVar" />
-    <SignUp v-else-if="searchPage" />
-    <SearchPage/>
+    <SearchPage v-else-if="searchPage"/>
+    
 </template>
 
 <style scoped>
