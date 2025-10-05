@@ -13,12 +13,19 @@
     const signUpVar = ref(false)
     const searchPage = ref(false)
 
+    function mainPage() {
+        main.value = true
+        searchPage.value = false
+        signInVar.value = false
+        signUpVar.value = false
+    }
+
     function logIn() {
         //If true go to searchpage
         searchPage.value = true
         main.value = false
-        signInVar = false
-        signUpVar = false
+        signInVar.value = false
+        signUpVar.value = false
     }
     function signIn() {
         main.value = false
@@ -43,7 +50,7 @@
 
 <template>
     <div class="header">
-        <h1 :class="titleClass">GroupHive</h1>
+        <button :class="titleClass" @click="mainPage">GroupHive</button>
         <input type="text" class="search-bar" placeholder="Search..." />
         <div class="sign">
             <button class='sign1' @click="signIn">Sign In</button>
@@ -65,7 +72,7 @@
 
 
 :global(body) {
-  background-color: #E6E6FA;
+  background-color: #D4F7FF;
   margin: 0;
   padding: 0;
   border: 1px solid #FFFACD;
@@ -86,9 +93,6 @@
   margin-top: 30px; 
 }
 
-
-
-
 .title {
   font-size: 30px; /* keep same size */
   font-family: 'Shadows Into Light Two', cursive;
@@ -97,11 +101,16 @@
   -webkit-text-stroke: 1.5px black;
   text-stroke: 1.5px black; 
   margin-left: 30px; 
-  margin-top: 25px;
+  margin-top: 20px;
+  border: none;
+  background: none;
+  padding: 10px;
 }
 
 .sign1, .sign2{
-    margin: 5px;
+    font-family: Cambria;
+    margin-right: 5px;
+    margin-top: 30px;
 }
 .header {
     display: flex;
@@ -115,6 +124,7 @@
 }
 .searchBtn {
     margin-left: 5px;
+    margin-right: 10px;
     font-size: 18px;
     cursor: pointer;
 }

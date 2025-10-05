@@ -22,19 +22,19 @@ const searchQuery = ref('')
 
 <style scoped>
 .searchPage {
-  background-color: #fffacd;
+  background-color: #FFFEF2;
   min-height: 100vh;
   padding: 20px;
   box-sizing: border-box;
-  border: 5px solid purple;
+  border: 5px solid #6AEAFC;
   border-radius: 10px;
 }
 
 .searchBar {
-  width: 100%;
+  width: 95%;
   padding: 10px;
   font-size: 16px;
-  border: 2px solid purple;
+  border: 2px solid #6AEAFC;
   border-radius: 5px;
   outline: none;
 }
