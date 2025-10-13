@@ -13,8 +13,9 @@ const app = express();
 // A middleware to parse incoming JSON data
 app.use(express.json());
 
-// --- Routes ---
+// ROUTES
 app.get('/api/users', async (req, res) => {
+   console.log("Called GET request for Users collection");
     try {
     // 1. Query the database using the Mongoose model
     // .find({}) retrieves all documents in the User collection
@@ -32,7 +33,8 @@ app.get('/api/users', async (req, res) => {
 });
 
 app.get('/api/events', async (req, res) => {
-    try {
+  console.log("Called POST request for Events collection");  
+  try {
 
     //retrieve all docs in Events collection
     const events = await Event.find({});
@@ -49,6 +51,7 @@ app.get('/api/events', async (req, res) => {
 });
 
 app.post('/api/users', async (req,res) => {
+  console.log("Called POST request for Users collection");
   try {
     //get name and email from request body
     const { name, email } = req.body;
@@ -77,6 +80,7 @@ app.post('/api/users', async (req,res) => {
 });
 
 app.post('/api/events', async (req,res) => {
+  console.log("Called POST request for Events collection");
   try {
     //get name and email from request body
     const { name, category, description, location, numberPeople } = req.body;
