@@ -26,7 +26,7 @@ const searchQuery = ref('')
   min-height: 100vh;
   padding: 20px;
   box-sizing: border-box;
-  border: 5px solid #6AEAFC;
+  border: 5px solid gray;
   border-radius: 10px;
 }
 
@@ -34,7 +34,7 @@ const searchQuery = ref('')
   width: 95%;
   padding: 10px;
   font-size: 16px;
-  border: 2px solid #6AEAFC;
+  border: 2px solid gray;
   border-radius: 5px;
   outline: none;
 }
