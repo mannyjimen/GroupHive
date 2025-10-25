@@ -82,7 +82,7 @@ app.post('/api/events', async (req,res) => {
   console.log("Called POST request for Events collection");
   try {
     //get name and email from request body
-    const { name, category, description, location, numberPeople } = req.body;
+    const { name, category, description, location, date, numberPeople } = req.body;
 
     //check if user already exists
     const eventExists = await Event.findOne({ name });
@@ -97,7 +97,8 @@ app.post('/api/events', async (req,res) => {
       category,
       description,
       location,
-      numberPeople: people
+      date,
+      numberPeople
     });
 
     console.log("created event")

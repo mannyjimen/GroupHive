@@ -5,7 +5,7 @@
     const user = ref('') //Value would be saved to user
     const pass = ref('') //Value would be saved to pass
     function onClick() {
-        this.$emit('loggingIn');
+        this.$root.$emit('loggingIn');
         //Function does not work will check later
         //1. Sign in
         //2. Go to search page

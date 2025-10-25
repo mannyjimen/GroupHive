@@ -6,18 +6,21 @@
     import SignIn from './SignIn.vue'
     import SignUp from './SignUp.vue'
     import SearchPage from './SearchPage.vue'
+    import CreateEvent from './CreateEvent.vue'
 
     const titleClass = ref('title')
     const main = ref(true)
     const signInVar = ref(false)
     const signUpVar = ref(false)
     const searchPage = ref(false)
+    const createEvent = ref(false)
 
     function mainPage() {
         main.value = true
         searchPage.value = false
         signInVar.value = false
         signUpVar.value = false
+        createEvent.value = false
     }
 
     function logIn() {
@@ -26,36 +29,53 @@
         main.value = false
         signInVar.value = false
         signUpVar.value = false
+        createEvent.value = false
     }
     function signIn() {
         main.value = false
         signInVar.value = true
         signUpVar.value = false
         searchPage.value = false
+        createEvent.value = false
     }
     function signUp() {
         main.value = false
         signInVar.value = false
         signUpVar.value = true
         searchPage.value = false
+        createEvent.value = false
     }
     function goToSearch() 
     {
-    searchPage.value = true
-    main.value = false
-    signInVar.value = false
-    signUpVar.value = false
+        searchPage.value = true
+        main.value = false
+        signInVar.value = false
+        signUpVar.value = false
+        createEvent.value = false
+    }
+    function goToCreate()
+    {
+        searchPage.value = false
+        main.value = false
+        signInVar.value = false
+        signUpVar.value = false
+        createEvent.value = true
     }
 </script>
 
 <template>
     <div class="header">
         <button :class="titleClass" @click="mainPage">GroupHive</button>
-        <input type="text" class="search-bar" placeholder="Search..." />
+        <div class="navigate">
+            <button class="home" @click="mainPage">Home</button>
+            <button class="join" @click="goToSearch">Join</button>
+            <button class="create" @click="goToCreate">Create</button>
+            <!-- Can add later About and Profile-->
+
+        </div>
         <div class="sign">
             <button class='sign1' @click="signIn">Sign In</button>
             <button class='sign2' @click="signUp">Sign Up</button>
-            <button class='searchBtn' @click="goToSearch">🔍</button>
         </div>
     </div>
     <div class="line"></div>
@@ -63,6 +83,7 @@
     <SignIn v-else-if="signInVar" @loggingIn="logIn"/>
     <SignUp v-else-if="signUpVar" />
     <SearchPage v-else-if="searchPage"/>
+    <CreateEvent v-else-if="createEvent"/>
     
 </template>
 
@@ -72,25 +93,12 @@
 
 
 :global(body) {
-  background-color: #D4F7FF;
+  background-color: #FFFFE0;
   margin: 0;
   padding: 0;
   border: 1px solid #FFFACD;
   box-sizing: border-box;
   min-height: 100vh;
-}
-
-.search-bar {
-  flex: none;              /* prevents it from stretching too much */
-  width: 400px;            /* 👈 make it narrower (was 300px) */
-  height: 30px;            /* 👈 makes it shorter */
-  padding: 2px 12px;       /* 👈 smaller padding inside */
-  border-radius: 999px;    /* keeps oval shape */
-  border: 2px solid #808080;
-  outline: none;
-  font-size: 14px;
-  box-sizing: border-box;
-  margin-top: 30px; 
 }
 
 .title {
@@ -106,11 +114,31 @@
   background: none;
   padding: 10px;
 }
-
-.sign1, .sign2{
+.home, .join, .create {
     font-family: Cambria;
+    font-size: 15px;
     margin-right: 5px;
     margin-top: 30px;
+    background: none;
+    border: none;
+}
+.sign1 {
+    font-family: Cambria;
+    font-size: 15px;
+    padding: 5px;
+    margin-right: 10px;
+    margin-top: 30px;
+    background: none;
+    border-radius: 5px;
+}
+.sign2 {
+    font-family: Cambria;
+    font-size: 15px;
+    padding: 5px;
+    margin-right: 30px;
+    margin-top: 30px;
+    background: none;
+    border-radius: 5px;
 }
 .header {
     display: flex;
