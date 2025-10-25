@@ -82,12 +82,13 @@ app.post('/api/events', async (req,res) => {
   console.log("Called POST request for Events collection");
   try {
     //get name and email from request body
-    const { name, category, description, location, date, numberPeople } = req.body;
+    const { name, category, description, location, date, people } = req.body;
 
     //check if user already exists
     const eventExists = await Event.findOne({ name });
 
     if (eventExists) {
+      console.log('someone tried to create event with already existing name')
       return res.status(400).json({ message: 'Event already exists'});
     }
 
@@ -98,7 +99,7 @@ app.post('/api/events', async (req,res) => {
       description,
       location,
       date,
-      numberPeople
+      numberPeople: people
     });
 
     console.log("created event")
