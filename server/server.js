@@ -1,6 +1,7 @@
 // server/server.js
 
 import express from 'express';
+import cors from 'cors';
 import connectDB from './config/db.js'; 
 import User from './models/User.js'
 import Event from './models/Events.js'
@@ -11,6 +12,7 @@ const app = express();
 
 // --- Middleware ---
 // A middleware to parse incoming JSON data
+app.use(cors());
 app.use(express.json());
 
 // ROUTES
@@ -33,18 +35,15 @@ app.get('/api/users', async (req, res) => {
 });
 
 app.get('/api/events', async (req, res) => {
-  console.log("Called POST request for Events collection");  
+  console.log("Called GET request for Events collection");  
   try {
 
     //retrieve all docs in Events collection
     const events = await Event.find({});
 
-    // 2. Send the retrieved data (users) as a JSON response
-    // The status 200 (OK) is implicit but good practice to include
     res.status(200).json(events);
 
-  } catch (error) {
-    // 3. Handle errors if the database query fails
+  } catch (error) { //error handline
     console.error(error);
     res.status(500).json({ message: 'Error retrieving events from database', error: error.message });
   }
