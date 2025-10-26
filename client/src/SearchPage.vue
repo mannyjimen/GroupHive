@@ -17,6 +17,7 @@
     const events = ref<Event[]>([])
     const isLoading = ref(true)
     const error = ref<string | null>(null)
+    const search = ref('')
 
     onMounted(async () => {
         try {
@@ -29,6 +30,7 @@
             isLoading.value = false;
         }
     });
+
 </script>
 
 <template>
@@ -40,8 +42,25 @@
       class="searchBar"
     />
     <div class="results">
-      <p v-if="!searchQuery">Type something to search...</p>
-      <p v-else>Searching for: "{{ searchQuery }}"</p>
+        <div v-if="searchQuery">
+            <p v-for="event in events">
+            <p v-if="event.name.toLowerCase().includes(searchQuery.toLowerCase())">
+                <div className="events">
+                    <div>Name: {{event.name}}</div>
+                    <div>Description: {{event.description}}</div>
+                    <div>Location: {{event.location}}</div>
+                    <div>Date and Time: {{event.date}}</div>
+                    <div>Number of People: {{event.numberPeople}}</div>
+                </div>
+            </p>
+            </p>
+        </div>
+        <div v-else-if="!searchQuery && hasSearched">
+            <p>Please enter an event.</p>
+        </div>
+        <div v-else>
+        </div>
+      
     </div>
 
      <div class="eventsPage">
@@ -51,7 +70,6 @@
          </div>
          <div className="eventsDisplay" v-else-if="events.length > 0">
              <div className="events" v-for="event in events">
-                 <div className="${event.category}"></div>
                  <div>Name: {{event.name}}</div>
                  <div>Description: {{event.description}}</div>
                  <div>Location: {{event.location}}</div>
