@@ -15,7 +15,7 @@
     const categories = [
         'Music',
         'Sports',
-        'Tech/Coding',
+        'Tech',
         'Food & Drink',
         'Art & Culture',
         'Gaming',
@@ -103,7 +103,7 @@
     .button {
         font-family: Cambria;
         width: 210px;
-        margin: 10px 0px 0px 0px;
+        margin: 10px 0px 0px 20px;
     }
 
     .form {
