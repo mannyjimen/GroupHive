@@ -93,27 +93,31 @@
 
 
 :global(body) {
-  background-color: #FFFFE0;
+  background-color: #EDF2F4;
   margin: 0;
   padding: 0;
-  border: 1px solid #FFFACD;
   box-sizing: border-box;
   min-height: 100vh;
 }
 
 .title {
   font-size: 30px; /* keep same size */
-  font-family: 'Shadows Into Light Two', cursive;
-  font-style: italic;
-  color: transparent;
-  -webkit-text-stroke: 1.5px black;
-  text-stroke: 1.5px black; 
+  
+  /* === FONT IS LOBSTER === */
+  font-family: 'Lobster', cursive; 
+  font-style: normal; /* Removed italic, as Lobster is already a script */
+  
+
   margin-left: 30px; 
   margin-top: 20px;
   border: none;
   background: none;
   padding: 10px;
+  cursor: pointer; 
 }
+
+
+
 .home, .join, .create {
     font-family: Cambria;
     font-size: 15px;
