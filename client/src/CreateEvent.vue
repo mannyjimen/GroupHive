@@ -11,6 +11,19 @@
     const time = ref('')
     const people = ref('')
     
+    //list of categories for drop-down
+    const categories = [
+        'Music',
+        'Sports',
+        'Tech/Coding',
+        'Food & Drink',
+        'Art & Culture',
+        'Gaming',
+        'Social',
+        'Education',
+        'Other'
+]
+
     async function onClick() {
         //creating the object
         const eventData = {
@@ -50,12 +63,19 @@
     <div class="form">
         <div class="event">Create Event</div>
         <input class="fill" v-model="name" placeholder="Name">
-        <input class="fill" v-model="category" placeholder="Category">
+        <!-- <input class="fill" v-model="category" placeholder="Category"> -->
+        <select class="fill" v-model="category">
+            <option disabled value="">Please select a category</option>
+
+            <option v-for="cat in categories" :key="cat" :value="cat">
+                {{ cat }}
+            </option>
+        </select>
         <input class="fill" v-model="description" placeholder="Description">
         <input class="fill" v-model="location" placeholder="Location">
         <input class="fill" v-model="date" placeholder="Date">
         <input class="fill" v-model="time" placeholder="Time">
-        <input class="fill" v-model="people" placeholder="People">
+        <input class="fill" v-model="people" placeholder="Estimated Number of People">
         <button class="button" @click="onClick">Create Event</button>
     </div>
 </template>
@@ -69,7 +89,11 @@
     .fill {
         font-family: Cambria;
         font-size: 15px;
-        padding: 5px;
+        /*manny changes*/
+        padding: 7px 7px;
+        box-sizing: border-box;
+        /* padding: 5px; */
+
         width: 500px;
         margin: 5px 0px 5px 0px; /*top,right,bottom,left*/
         border-radius: 5px;
@@ -90,7 +114,7 @@
         padding: 10px;
         flex-direction: column;
         width: 90%;
-        height: 400px;
+        height: 500px;
         justify-content: center;
         border-radius: 50px;
         border: 1px solid black;
