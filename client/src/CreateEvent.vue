@@ -22,7 +22,7 @@
         'Social',
         'Education',
         'Other'
-]
+    ]
 
     async function onClick() {
         //creating the object
