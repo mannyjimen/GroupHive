@@ -5,6 +5,7 @@ import cors from 'cors';
 import connectDB from './config/db.js'; 
 import User from './models/User.js'
 import Event from './models/Events.js'
+import jwt from 'jsonwebtoken'
 
 //initial setup
 connectDB();
@@ -53,10 +54,10 @@ app.post('/api/users', async (req,res) => {
   console.log("Called POST request for Users collection");
   try {
     //get name and email from request body
-    const { name, email } = req.body;
+    const {email, username, password } = req.body;
 
     //check if user already exists
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ username });
 
     if (userExists) {
       return res.status(400).json({ message: 'User already exists'});
@@ -64,17 +65,69 @@ app.post('/api/users', async (req,res) => {
 
     //create new user instance from model
     const user = new User({
-      name,
       email,
+      username,
+      password,
     });
 
     const createdUser = await user.save();
 
     //send the newly created user back as a response
-    res.status(201).json(createdUser);
+    res.status(201).json({
+      _id: createdUser._id,
+      name: createdUser.name,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error'});
+  }
+});
+
+// --- LOGIN ROUTE ---
+app.post('/api/login', async (req, res) => {
+  console.log("Called POST request for /api/login");
+  try {
+    const { username, password} = req.body;
+
+    // 1. Check if user exists
+    const user = await User.findOne({ username });
+    if (!user) {
+      // Use a generic message for security
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // 2. Compare plain-text passwords (as you requested)
+    // NOTE: This is highly insecure.
+    const isMatch = (password === user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // 3. User is valid, create a JWT token
+    const payload = {
+      user: {
+        id: user.id, // Save the user's ID in the token
+        name: user.username
+      }
+    };
+
+    // Store this secret in a .env file in a real project!
+    const JWT_SECRET = 'your-super-secret-key-goes-here'; 
+
+    jwt.sign(
+      payload,
+      JWT_SECRET,
+      { expiresIn: '1h' }, // Token expires in 1 hour
+      (err, token) => {
+        if (err) throw err;
+        // 4. Send the token back to the client
+        res.json({ token });
+      }
+    );
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
   }
 });
 
