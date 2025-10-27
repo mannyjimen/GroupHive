@@ -1,20 +1,57 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { createApp } from 'vue'
+    import axios from 'axios'
 
     const email = ref('')
-    const user = ref('') 
-    const pass = ref('')
-    function onClick() {
-        //Store to database
+    const username = ref('') 
+    const password = ref('')
+
+    const error = ref('')
+    const success = ref('')
+
+    // 3. Replace the onClick function
+    async function onClick() {
+        error.value = ''
+        success.value = ''
+
+        const newUser = {
+            email: email.value,
+            username: username.value,
+            password: password.value
+        }
+
+        try {
+            // 4. Call your backend's register route
+            const response = await axios.post('http://localhost:5000/api/users', newUser)
+            console.log('server response:', response.data);
+            alert('New User Created Succesfully');
+
+            // 5. Handle success
+            success.value = `User ${response.data.name} created! You can now sign in.`;
+            
+            // Clear the form
+            email.value = ''
+            username.value = ''
+            password.value = ''
+
+        } catch (err: any) {
+            // 6. Handle errors (like "User already exists")
+            if (err.response && err.response.data.message) {
+                error.value = err.response.data.message;
+            } else {
+                error.value = 'An error occurred during sign up.';
+            }
+        }
     }
 </script>
+
 <template>
     <div class="form">
         <div class="signUp">Sign Up</div>
         <input class="email" v-model="email" placeholder="Email">
-        <input class="user" v-model="user" placeholder="Username">
-        <input class="pass" v-model="pass" placeholder="Password">
+        <input class="user" v-model="username" placeholder="Username">
+        <input class="pass" v-model="password" placeholder="Password">
         <button class="button" @click="onClick">Sign Up</button>
     </div>
 </template>
