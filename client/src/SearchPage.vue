@@ -43,8 +43,8 @@
     />
     <div class="results">
         <div v-if="searchQuery">
-            <p v-for="event in events">
-            <p v-if="event.name.toLowerCase().includes(searchQuery.toLowerCase())">
+            <div v-for="event in events">
+            <div v-if="event.name.toLowerCase().includes(searchQuery.toLowerCase())">
                 <div className="events">
                     <div>Name: {{event.name}}</div>
                     <div>Description: {{event.description}}</div>
@@ -52,8 +52,8 @@
                     <div>Date and Time: {{event.date}}</div>
                     <div>Number of People: {{event.numberPeople}}</div>
                 </div>
-            </p>
-            </p>
+            </div>
+            </div>
         </div>
         <div v-else-if="!searchQuery && hasSearched">
             <p>Please enter an event.</p>
@@ -70,6 +70,9 @@
          </div>
          <div className="eventsDisplay" v-else-if="events.length > 0">
              <div className="events" v-for="event in events">
+
+                 <div :class="['eventImage', event.category]"></div>
+
                  <div>Name: {{event.name}}</div>
                  <div>Description: {{event.description}}</div>
                  <div>Location: {{event.location}}</div>
@@ -116,40 +119,50 @@
     padding: 10px 10px 10px 10px;
     margin: 5px 5px 5px 5px;
 }
-.Music {
-    background-image: url('../public/music.jpg');
+
+.eventImage{
     width: 100%;
-    height: auto;
+    height: 150px;
     border-radius: 10px;
     background-size: cover;
     background-position: center; 
     background-repeat: no-repeat;
+}
+
+.Music {
+    background-image: url('/music.jpg');
+
 }
 .Sports {
-    background-image: url('../public/sports.jpeg');
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    background-size: cover;
-    background-position: center; 
-    background-repeat: no-repeat;
+    background-image: url('/Sports.jpg');
 }
+
 .Tech{
-    background-image: url('../public/tech.jpg');
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    background-size: cover;
-    background-position: center; 
-    background-repeat: no-repeat;
+    background-image: url('/tech.jpg');
 }
+
 .Gaming{
-    background-image: url('../public/gaming.jpg');
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-    background-size: cover;
-    background-position: center; 
-    background-repeat: no-repeat;
+    background-image: url('/gaming.jpg');
 }
+
+.Art{
+    background-image: url('/art.jpg');
+}
+
+.Education{
+    background-image: url('/education.jpg');
+}
+
+.Food{
+    background-image: url('/food.jpg');
+}
+
+.Social{
+    background-image: url('/social.jpg');
+}
+
+.Other{
+    background-image: url('/other.jpg')
+}
+
 </style>
