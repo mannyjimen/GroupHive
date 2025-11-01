@@ -104,7 +104,7 @@
     <SignIn v-else-if="signInVar" @loggingIn="logIn"/>
     <SignUp v-else-if="signUpVar" />
     <SearchPage v-else-if="searchPage"/>
-    <CreateEvent v-else-if="createEvent"/>
+    <CreateEvent v-else-if="createEvent"/>-->
 
     
     
