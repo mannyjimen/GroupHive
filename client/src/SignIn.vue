@@ -3,6 +3,7 @@
     import { createApp } from 'vue'
     import axios from 'axios'
     import { useRouter } from 'vue-router'
+    import HomePage from './HomePage.vue'
 
     const username = ref('') //Value would be saved to user
     const password = ref('') //Value would be saved to pass
@@ -27,7 +28,7 @@
             localStorage.setItem('token', token);
 
             // 9. Redirect to the search page (as you wanted)
-            //router.push('/search'); // <-- This will navigate to your search page - still working on what page to direct to
+            router.push('/'); // <-- This will navigate to your search page - still working on what page to direct to
 
         } catch (err: any) {
             // 10. Handle "Invalid credentials"

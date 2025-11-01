@@ -65,25 +65,46 @@
 
 <template>
     <div class="header">
+        
+        <router-link to="/">
+            <button :class="titleClass">GroupHive</button>
+        </router-link>
+
+        <div class="navigate">
+            <router-link to="/"><button class="home">Home</button></router-link>
+            <router-link to="/search"><button class="join">Join</button></router-link>
+            <router-link to="/create-event"><button class="create">Create</button></router-link>
+        </div>
+        <div class="sign">
+            <router-link to="/signin"><button class='sign1'>Sign In</button></router-link>
+            <router-link to="/signup"><button class='sign2'>Sign Up</button></router-link>
+        </div>
+        
+        
+        <!--
         <button :class="titleClass" @click="mainPage">GroupHive</button>
         <div class="navigate">
             <button class="home" @click="mainPage">Home</button>
             <button class="join" @click="goToSearch">Join</button>
             <button class="create" @click="goToCreate">Create</button>
-            <!-- Can add later About and Profile-->
+             //Can add later About and Profile
 
         </div>
         <div class="sign">
             <button class='sign1' @click="signIn">Sign In</button>
             <button class='sign2' @click="signUp">Sign Up</button>
-        </div>
+        </div>-->
     </div>
     <div class="line"></div>
-    <HomePage v-if="main" />
+
+
+    <router-view />
+
+    <!--<HomePage v-if="main" />
     <SignIn v-else-if="signInVar" @loggingIn="logIn"/>
     <SignUp v-else-if="signUpVar" />
     <SearchPage v-else-if="searchPage"/>
-    <CreateEvent v-else-if="createEvent"/>
+    <CreateEvent v-else-if="createEvent"/>-->
     
 </template>
 
