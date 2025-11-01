@@ -47,6 +47,8 @@
         <input class="user" v-model="username" placeholder="Username">
         <input class="pass" v-model="password" placeholder="Password">
         <button class="button" @click="onClick">Sign In</button>
+
+        <p v-if="error" class="error-message">{{ error }}</p>
         <!-- To see value
         <p>{{ user }}</p>
         <p>{{ pass }}</p>
@@ -83,6 +85,12 @@
         border-radius: 50px;
         border: 1px solid black;
         outline: none;
+    }
+    .error-message {
+        color: red;
+        font-family: Cambria;
+        font-size: 14px;
+        margin-top: 15px; /* Add some space */
     }
 
 </style>
