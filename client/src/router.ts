@@ -5,7 +5,7 @@ import SignUp from './SignUp.vue'
 import SearchPage from './SearchPage.vue'
 import CreateEvent from './CreateEvent.vue'
 
-// 1. Define your routes
+//defining the routes
 const routes = [
   {
     path: '/',
@@ -34,11 +34,11 @@ const routes = [
   }
 ]
 
-// 2. Create the router instance
+//Creating the router instance
 const router = createRouter({
   history: createWebHistory(),
   routes // short for `routes: routes`
 })
 
-// 3. Export the router
+// Exporting the router
 export default router
