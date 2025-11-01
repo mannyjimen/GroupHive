@@ -104,7 +104,9 @@
     <SignIn v-else-if="signInVar" @loggingIn="logIn"/>
     <SignUp v-else-if="signUpVar" />
     <SearchPage v-else-if="searchPage"/>
-    <CreateEvent v-else-if="createEvent"/>-->
+    <CreateEvent v-else-if="createEvent"/>
+
+    
     
 </template>
 
@@ -114,7 +116,7 @@
 
 
 :global(body) {
-  background-color: #EDF2F4;
+  background-color: #FFFFE0;
   margin: 0;
   padding: 0;
   box-sizing: border-box;

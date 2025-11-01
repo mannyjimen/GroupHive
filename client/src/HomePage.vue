@@ -6,20 +6,30 @@ const homePage = ref('home')
 
 <template>
   <div class="homepage-container">
-    <div class="intro">
-        <div>
-            Welcome to Group Hive!
+    <div class="hero-section">
+        <img src="/hoopers.webp" alt="People playing basketball" class="side-image image-1">
+        <img src="/bookclub.jpg" alt="Book club meeting" class="side-image image-2">
+        
+        <div class="intro">
+            <div class="intro-main">
+                Be a Part of the Hive! 🐝
+            </div>
+            <div class="intro-sub">
+                Make Friends, Build Relationships, Join Communities
+            </div>
         </div>
-        <div>
-            A platform where you can find, join, and create events!
-        </div>
+
+        <img src="/bar.jpg" alt="Friends at a bar" class="side-image image-3">
+        <img src="/park.jpg" alt="People in a park" class="side-image image-4">
     </div>
+
+
+
     <div class="home">
         <input type="text" class="search-bar" placeholder="Search..." />
     </div>
 
     
-    <!-- === START: UPDATED CATEGORIES SECTION (Light Theme) === -->
     <section class="categories-section light-theme-style">
       <div class="section-header">
         <h2 class="section-title">Categories</h2>
@@ -105,16 +115,29 @@ const homePage = ref('home')
         font-size: 30px;
         margin-top: 30px;
     }
-    .intro {
+   .intro {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        font-family: Cambria;
-        font-size: 30px;
-        margin-top: 30px;
-        color: #000000; /* Set intro text to black */
+        max-width: 50%; 
+        text-align: center;
+        color: #000000;
+        position: relative; 
+        z-index: 2; 
     }
+
+    .intro-main {
+        font-family: 'Lobster', cursive; /* Script font */
+        font-size: 48px; /* Larger text */
+        margin-bottom: 10px;
+    }
+
+    .intro-sub {
+        font-family: Cambria, sans-serif; /* Non-script font */
+        font-size: 22px; /* Smaller subtext */
+    }
+    
     .search-bar {
         flex: none;
         width: 400px;
@@ -271,5 +294,45 @@ const homePage = ref('home')
       text-overflow: ellipsis;
       width: 100%;
     }
-    /* === END: UPDATED CATEGORY STYLES === */
+
+    .hero-section {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 50px 0; /* Adds vertical space for the images */
+        min-height: 350px; /* Ensures container has height for positioned images */
+        margin-bottom: -20px; 
+    }
+
+ .side-image {
+        position: absolute;
+        width: 250px; 
+        height: auto; 
+        border: 3px solid #E6E6FA; /* Thin Light Lavender border */
+        border-radius: 12px; 
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12); 
+        z-index: 1; /* Places images behind the intro text */
+    }
+
+    /* --- Left Image Positions --- */
+    .image-1 {
+        top: 50px;
+        left: 5%; 
+    }
+    .image-2 {
+        top: 300px;
+        left: 5%;
+    }
+
+    /* --- Right Image Positions --- */
+    .image-3 {
+        top: 50px;
+        right: 5%; 
+    }
+    .image-4 {
+        top: 300px;
+        right: 5%;
+    }
+
 </style>
