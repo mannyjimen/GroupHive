@@ -7,31 +7,31 @@
 
     const username = ref('') //Value would be saved to user
     const password = ref('') //Value would be saved to pass
-    const error = ref('') // 3. Add an error ref
+    const error = ref('') //  Add an error ref
 
-    const router = useRouter() // 4. Get the router instance
+    const router = useRouter() //  Get the router instance
 
-    // 5. Replace the onClick function
+    // Replace the onClick function
     async function onClick() {
         error.value = ''
         try {
-            // 6. Call your backend's login route
+            // Call your backend's login route
             const response = await axios.post('http://localhost:5000/api/login', {
                 username: username.value,     // 'user' from form maps to 'name' in API
                 password: password.value  // 'pass' from form maps to 'password' in API
             });
 
-            // 7. Get the token from the response
+            // Get the token from the response
             const token = response.data.token;
 
-            // 8. CRITICAL: Store the token in the browser
+            //store token in the browswer
             localStorage.setItem('token', token);
 
-            // 9. Redirect to the search page (as you wanted)
-            router.push('/'); // <-- This will navigate to your search page - still working on what page to direct to
+            // Redirect to the home page
+            router.push('/'); 
 
         } catch (err: any) {
-            // 10. Handle "Invalid credentials"
+            //  Handle "Invalid credentials"
             if (err.response && err.response.data.message) {
                 error.value = err.response.data.message;
             } else {
@@ -47,6 +47,8 @@
         <input class="user" v-model="username" placeholder="Username">
         <input class="pass" v-model="password" placeholder="Password">
         <button class="button" @click="onClick">Sign In</button>
+
+        <p v-if="error" class="error-message">{{ error }}</p>
         <!-- To see value
         <p>{{ user }}</p>
         <p>{{ pass }}</p>
@@ -83,6 +85,12 @@
         border-radius: 50px;
         border: 1px solid black;
         outline: none;
+    }
+    .error-message {
+        color: red;
+        font-family: Cambria;
+        font-size: 14px;
+        margin-top: 15px; /* Add some space */
     }
 
 </style>
