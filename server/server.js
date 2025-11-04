@@ -36,21 +36,6 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
-app.get('/api/events', async (req, res) => {
-  console.log("Called GET request for Events collection");  
-  try {
-
-    //retrieve all docs in Events collection
-    const events = await Event.find({});
-
-    res.status(200).json(events);
-
-  } catch (error) { //error handline
-    console.error(error);
-    res.status(500).json({ message: 'Error retrieving events from database', error: error.message });
-  }
-});
-
 app.post('/api/users', async (req,res) => {
   console.log("Called POST request for Users collection");
   try {
@@ -132,6 +117,8 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+//`Event` routes
+
 app.post('/api/events', async (req,res) => {
   console.log("Called POST request for Events collection");
   try {
@@ -167,6 +154,41 @@ app.post('/api/events', async (req,res) => {
     res.status(500).json({ message: 'Server Error'});
   }
 });
+
+app.get('/api/events', async (req, res) => {
+  console.log("Called GET request for Events collection");  
+  try {
+
+    //retrieve all docs in Events collection
+    const events = await Event.find({});
+
+    res.status(200).json(events);
+
+  } catch (error) { //error handline
+    console.error(error);
+    res.status(500).json({ message: 'Error retrieving events from database', error: error.message });
+  }
+});
+
+app.get('/api/events/:name', async (req, res) => {
+  console.log("Called GET request for SPECIFIC Event");
+  try {
+    const {name} = req.params;
+
+    //check if exists
+
+    const event = await Event.findOne({ name: name});
+
+    if (!event) {
+      return res.status(404).json({message: 'Event not found'});
+    }
+
+    res.status(200).json(event);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({message: 'Server Error'});
+  }
+})
 
 //`Profile` routes
 app.post('/api/profiles', async (req,res) => {
