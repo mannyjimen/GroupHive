@@ -5,6 +5,7 @@ import cors from 'cors';
 import connectDB from './config/db.js'; 
 import User from './models/User.js'
 import Event from './models/Events.js'
+import Profile from './models/Profile.js'
 import jwt from 'jsonwebtoken'
 
 //initial setup
@@ -167,7 +168,71 @@ app.post('/api/events', async (req,res) => {
   }
 });
 
+//`Profile` routes
+app.post('/api/profiles', async (req,res) => {
+  console.log("Called POST request for Profiles collection");
+  try {
+    const {
+      email,
+      username,
+      realName,
+      savedEvents,
+      bio,
+      gender,
+      location,
+      age
+    } = req.body;
 
+    if (!email || !username) {
+      return res.status(400).json({ message: 'Email and Username are required'});
+    }
+
+    const profileExists = await Profile.findOne({ $or: [{ email}, {username}]});
+    if (profileExists) {
+      return res.status(400).json({ message: 'A profile with this email/username already exists'});
+    }
+
+    //create profile object
+    const profile = new Profile({
+      email,
+      username,
+      realName,
+      savedEvents,
+      bio,
+      gender,
+      location,
+      age
+    });
+
+    //saving to db
+    const createdProfile = await profile.save();
+    res.status(201).json(createdProfile);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+//get with route parameter (specific username)
+
+app.get('/api/profiles/:username', async (req, res) => {
+  try {
+    //getting username from request parameters (url params)
+    const {username} = req.params;
+
+    //check if exists
+    const profile = await Profile.findOne({ username: username});
+
+    if (!profile) {
+      return res.status(404).json({ message: 'Profile not found'});
+    }
+
+    res.status(200).json(profile);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error'});
+  }
+})
 
 
 // --- Server Listening ---
