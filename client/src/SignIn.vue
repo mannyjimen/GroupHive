@@ -1,23 +1,54 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { createApp } from 'vue'
+    import axios from 'axios'
+    import { useRouter } from 'vue-router'
+    import HomePage from './HomePage.vue'
 
-    const user = ref('') //Value would be saved to user
-    const pass = ref('') //Value would be saved to pass
-    function onClick() {
-        this.$root.$emit('loggingIn');
-        //Function does not work will check later
-        //1. Sign in
-        //2. Go to search page
+    const username = ref('') //Value would be saved to user
+    const password = ref('') //Value would be saved to pass
+    const error = ref('') //  Add an error ref
+
+    const router = useRouter() //  Get the router instance
+
+    // Replace the onClick function
+    async function onClick() {
+        error.value = ''
+        try {
+            // Call your backend's login route
+            const response = await axios.post('http://localhost:5000/api/login', {
+                username: username.value,     // 'user' from form maps to 'name' in API
+                password: password.value  // 'pass' from form maps to 'password' in API
+            });
+
+            // Get the token from the response
+            const token = response.data.token;
+
+            //store token in the browswer
+            localStorage.setItem('token', token);
+
+            // Redirect to the home page
+            router.push('/'); 
+
+        } catch (err: any) {
+            //  Handle "Invalid credentials"
+            if (err.response && err.response.data.message) {
+                error.value = err.response.data.message;
+            } else {
+                error.value = 'An error occurred during sign in.';
+            }
+        }
     }
 </script>
 
 <template>
     <div class="form">
         <div class="signIn">Sign In</div>
-        <input class="user" v-model="user" placeholder="Username">
-        <input class="pass" v-model="pass" placeholder="Password">
+        <input class="user" v-model="username" placeholder="Username">
+        <input class="pass" v-model="password" placeholder="Password">
         <button class="button" @click="onClick">Sign In</button>
+
+        <p v-if="error" class="error-message">{{ error }}</p>
         <!-- To see value
         <p>{{ user }}</p>
         <p>{{ pass }}</p>
@@ -54,6 +85,12 @@
         border-radius: 50px;
         border: 1px solid black;
         outline: none;
+    }
+    .error-message {
+        color: red;
+        font-family: Cambria;
+        font-size: 14px;
+        margin-top: 15px; /* Add some space */
     }
 
 </style>
