@@ -7,6 +7,7 @@
     import SignUp from './SignUp.vue'
     import SearchPage from './SearchPage.vue'
     import CreateEvent from './CreateEvent.vue'
+    import Profile from './Profile.vue'
 
     const titleClass = ref('title')
     const main = ref(true)
@@ -14,53 +15,13 @@
     const signUpVar = ref(false)
     const searchPage = ref(false)
     const createEvent = ref(false)
-
-    function mainPage() {
-        main.value = true
-        searchPage.value = false
-        signInVar.value = false
-        signUpVar.value = false
-        createEvent.value = false
+    const profile = ref(false)
+    //Add user tracking and log out
+    const noUser = ref(false)
+    function logout() {
+        noUser.value = true;
     }
 
-    function logIn() {
-        //If true go to searchpage
-        searchPage.value = true
-        main.value = false
-        signInVar.value = false
-        signUpVar.value = false
-        createEvent.value = false
-    }
-    function signIn() {
-        main.value = false
-        signInVar.value = true
-        signUpVar.value = false
-        searchPage.value = false
-        createEvent.value = false
-    }
-    function signUp() {
-        main.value = false
-        signInVar.value = false
-        signUpVar.value = true
-        searchPage.value = false
-        createEvent.value = false
-    }
-    function goToSearch() 
-    {
-        searchPage.value = true
-        main.value = false
-        signInVar.value = false
-        signUpVar.value = false
-        createEvent.value = false
-    }
-    function goToCreate()
-    {
-        searchPage.value = false
-        main.value = false
-        signInVar.value = false
-        signUpVar.value = false
-        createEvent.value = true
-    }
 </script>
 
 <template>
@@ -75,38 +36,19 @@
             <router-link to="/search"><button class="join">Join</button></router-link>
             <router-link to="/create-event"><button class="create">Create</button></router-link>
         </div>
-        <div class="sign">
+        <div class="sign" v-if="noUser">
             <router-link to="/signin"><button class='sign1'>Sign In</button></router-link>
             <router-link to="/signup"><button class='sign2'>Sign Up</button></router-link>
         </div>
-        
-        
-        <!--
-        <button :class="titleClass" @click="mainPage">GroupHive</button>
-        <div class="navigate">
-            <button class="home" @click="mainPage">Home</button>
-            <button class="join" @click="goToSearch">Join</button>
-            <button class="create" @click="goToCreate">Create</button>
-             //Can add later About and Profile
-
+        <div class="sign" v-else-if="!noUser">
+            <button class='sign1' @click="logout">Logout</button>
+            <router-link to="/profile"><button class='sign2'>Profile</button></router-link>
         </div>
-        <div class="sign">
-            <button class='sign1' @click="signIn">Sign In</button>
-            <button class='sign2' @click="signUp">Sign Up</button>
-        </div>-->
+        
     </div>
     <div class="line"></div>
 
-
     <router-view />
-
-    <!--<HomePage v-if="main" />
-    <SignIn v-else-if="signInVar" @loggingIn="logIn"/>
-    <SignUp v-else-if="signUpVar" />
-    <SearchPage v-else-if="searchPage"/>
-    <CreateEvent v-else-if="createEvent"/>-->
-
-    
     
 </template>
 
@@ -138,8 +80,6 @@
   padding: 10px;
   cursor: pointer; 
 }
-
-
 
 .home, .join, .create {
     font-family: Cambria;
