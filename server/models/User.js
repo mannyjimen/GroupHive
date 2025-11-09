@@ -1,8 +1,15 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs"
+import AutoIncrementFactory from 'mongoose-sequence';
+
+const AutoIncrement = AutoIncrementFactory(mongoose);
 
 const userSchema = new mongoose.Schema({
-    
+
+    userID: {
+        type: Number,
+        unique: true
+    },
     email: {
         type: String,
         required: true,
@@ -21,6 +28,10 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 })
 
+userSchema.plugin(AutoIncrement,{
+    inc_field: 'userID',
+    start_seq: 0
+});
 
 const User = mongoose.model('User', userSchema);
 
