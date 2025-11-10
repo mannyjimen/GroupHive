@@ -22,11 +22,10 @@ const eventSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    numberPeople: {
-        type : Number,
-        required: true
+    attendees: {
+        type: [Number], 
+        default: []
     }
-
 }, {
     timestamps: true
 })
