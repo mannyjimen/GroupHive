@@ -92,7 +92,7 @@ app.post('/api/login', async (req, res) => {
     // 3. User is valid, create a JWT token
     const payload = {
       user: {
-        id: user.id, // Save the user's ID in the token
+        id: user.userID, // Save the user's ID in the token
         name: user.username
       }
     };
