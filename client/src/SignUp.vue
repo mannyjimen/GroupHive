@@ -82,7 +82,6 @@
         flex-direction: column;
         width: 300px;
         height: 400px;
-        justify-content: center;
         border-radius: 50px; 
         border: 1px solid black;
         outline: none;

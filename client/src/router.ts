@@ -4,6 +4,7 @@ import SignIn from './SignIn.vue'
 import SignUp from './SignUp.vue'
 import SearchPage from './SearchPage.vue'
 import CreateEvent from './CreateEvent.vue'
+import Profile from './Profile.vue'
 
 //defining the routes
 const routes = [
@@ -31,6 +32,11 @@ const routes = [
     path: '/create-event',
     name: 'CreateEvent',
     component: CreateEvent
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile
   }
 ]
 
