@@ -190,6 +190,46 @@ app.get('/api/events/:name', async (req, res) => {
   }
 })
 
+app.patch('/api/events/:id', async (req, res) => {
+  console.log("Called PATCH for Event")
+  try {
+    const { id } = req.params;
+    
+    const updateData = req.body
+    const updatedEvent = await Event.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true}
+    );
+
+    if (!updatedEvent) {
+      return res.status(404).json({message: 'Event not found'});
+    }
+
+    res.status(200).json(updatedEvent)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({message: 'Error updating event', error: error.message})
+  }
+})
+
+app.delete('/api/events/:id', async (req, res) => {
+  console.log("Called DELETE for event")
+  try {
+    const { id } = req.params;
+
+    const result = await Event.findByIdAndDelete(id);
+    if (!result) {
+      return res.status(404).json({message: 'Event not found'});
+    }
+    
+    res.status(200).json({message: 'Event successfuly deleted', deletedEvent: result})
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({message: 'Server Error', error: error.message});
+  }
+})
+
 //`Profile` routes
 app.post('/api/profiles', async (req,res) => {
   console.log("Called POST request for Profiles collection");
