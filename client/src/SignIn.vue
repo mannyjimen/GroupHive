@@ -28,7 +28,7 @@
             localStorage.setItem('token', token);
 
             // Redirect to the home page
-            router.push('/'); 
+            router.push('/profile'); 
 
         } catch (err: any) {
             //  Handle "Invalid credentials"
