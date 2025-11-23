@@ -22,15 +22,55 @@
         numberPeople: number;
     }
     const events = ref<Event[]>([])
-    const profile = ref<Profile>
+    const profile = ref<Profile| null>(null);
     const isLoading = ref(true)
     const error = ref<string | null>(null)
     const search = ref('')
+
+    // Get user info from token
+    function getUserFromToken() {
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+        try {
+            // Decodes the payload section of the JWT
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const payload = JSON.parse(window.atob(base64));
+            return payload.user; // Returns { id: ..., name: 'username' }
+        } catch (e) {
+            console.error("Invalid token");
+            return null;
+        }
+    }
 
     onMounted(async () => {
         //Get profile by user logged in
         //Get list of event names
         //Get events by name from list
+
+        const currentUser = getUserFromToken();
+
+        if (currentUser && currentUser.username){
+            const token = localStorage.getItem('token'); //retrieving token from local storage
+
+            // adding header object to request
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+            
+            // pass config to axios call
+            const profileRes = await axios.get(
+                `http://localhost:5000/api/profiles/${currentUser.username}`,
+                config
+            );
+            profile.value = profileRes.data;
+        }
+        else{
+            console.log("No such username found in profile database");
+        }
+
         try {
             const response = await axios.get('http://localhost:5000/api/events');
             events.value = response.data;
@@ -53,7 +93,17 @@
 <template>
     <div class="profile">
         <div class="information">
-            Your Information
+            <h2>Your Information</h2>
+            <div v-if="profile">
+                <p><strong>Real Name:</strong> {{ profile.realName }}</p>
+                <p><strong>Username:</strong> {{ profile.username }}</p>
+                <p><strong>Bio:</strong> {{ profile.bio }}</p>
+                <p><strong>Location:</strong> {{ profile.location }}</p>
+                <p><strong>Email:</strong> {{ profile.email }}</p>
+            </div>
+            <div v-else-if="!isLoading">
+                <p>Profile not set up yet.</p>
+            </div>
         </div>
         <div class="savedEvents">
             Events Saved
