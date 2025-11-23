@@ -134,7 +134,7 @@
 
 }
 .Sports {
-    background-image: url('/Sports.jpg');
+    background-image: url('/sports.jpg');
 }
 
 .Tech{

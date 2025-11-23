@@ -8,7 +8,6 @@
     const description = ref('')
     const location = ref('')
     const date = ref('')
-    const time = ref('')
     const people = ref('')
     
     //list of categories for drop-down
@@ -32,7 +31,6 @@
             description: description.value,
             location: location.value,
             date: date.value,
-            time: time.value,
             people: people.value
         }
 
@@ -49,7 +47,6 @@
             description.value = '';
             location.value = '';
             date.value = '';
-            time.value = '';
             people.value = '';
         } catch (error) {
             console.error('error creating event:', error);
@@ -73,8 +70,7 @@
         </select>
         <input class="fill" v-model="description" placeholder="Description">
         <input class="fill" v-model="location" placeholder="Location">
-        <input class="fill" v-model="date" placeholder="Date">
-        <input class="fill" v-model="time" placeholder="Time">
+        <input class="fill" v-model="date" placeholder="Date and Time">
         <input class="fill" v-model="people" placeholder="Estimated Number of People">
         <button class="button" @click="onClick">Create Event</button>
     </div>
