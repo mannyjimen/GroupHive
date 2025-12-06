@@ -299,6 +299,11 @@ app.get('/api/profiles/:username', authMiddleware, async (req, res) => {
 })
 
 
+app.post('/api/logout', (req, res) => {
+  res.status(200).json({ message: 'Logged out' });
+});
+
+
 // --- Server Listening ---
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
