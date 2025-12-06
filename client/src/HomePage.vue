@@ -1,7 +1,32 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const homePage = ref('home')
+const username = ref('')
+
+// Decode JWT token to extract username
+function decodeToken(token: string): any {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) return null
+    const payload = parts[1]
+    const decoded = JSON.parse(atob(payload))
+    return decoded
+  } catch (err) {
+    console.error('Failed to decode token:', err)
+    return null
+  }
+}
+
+onMounted(() => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    const decoded = decodeToken(token)
+    if (decoded && decoded.user && decoded.user.username) {
+      username.value = decoded.user.username
+    }
+  }
+})
 </script>
 
 <template>
@@ -11,7 +36,10 @@ const homePage = ref('home')
         <img src="/bookclub.jpg" alt="Book club meeting" class="side-image image-2">
         
         <div class="intro">
-            <div class="intro-main">
+            <div class="intro-main" v-if="username">
+                Welcome Back!! {{ username }} 🐝
+            </div>
+            <div class="intro-main" v-else>
                 Be a Part of the Hive! 🐝
             </div>
             <div class="intro-sub">
