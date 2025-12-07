@@ -44,6 +44,7 @@
         try {
             await fetch('/api/logout', { method: 'POST', credentials: 'include' })
         } catch (err) {
+            // Non-fatal: continue to clear client state even if request fails
             console.error('Logout request failed', err)
         }
 
@@ -53,7 +54,10 @@
         // Update header state
         noUser.value = true
 
-        // Redirect user to sign-in page
+        // Dispatch event to update all components
+        window.dispatchEvent(new Event('authChanged'))
+
+        // Redirect to homepage (will show default "Be a Part of the Hive!" message)
         router.push('/')
     }
 

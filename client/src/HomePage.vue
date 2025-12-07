@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const homePage = ref('home')
 const username = ref('')
@@ -18,14 +18,29 @@ function decodeToken(token: string): any {
   }
 }
 
-onMounted(() => {
+// Function to update username from token
+function updateUsername() {
   const token = localStorage.getItem('token')
   if (token) {
     const decoded = decodeToken(token)
     if (decoded && decoded.user && decoded.user.username) {
       username.value = decoded.user.username
     }
+  } else {
+    // Clear username if no token (user logged out)
+    username.value = ''
   }
+}
+
+onMounted(() => {
+  updateUsername()
+
+  // Listen for auth changes (sign in / sign out)
+  window.addEventListener('authChanged', updateUsername)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('authChanged', updateUsername)
 })
 </script>
 

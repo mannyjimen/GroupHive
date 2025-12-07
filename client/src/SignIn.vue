@@ -27,10 +27,9 @@
             //store token in the browswer
             localStorage.setItem('token', token);
 
-            // Redirect to the home page
             // Notify the app about auth change so header updates without reload
             window.dispatchEvent(new Event('authChanged'))
-            router.push('/profile'); 
+            router.push('/'); 
 
         } catch (err: any) {
             //  Handle "Invalid credentials"
