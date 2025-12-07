@@ -2,6 +2,7 @@
     import { ref } from 'vue'
     import { createApp } from 'vue'
     import axios from 'axios'
+    import { useRouter } from 'vue-router'
 
     const email = ref('')
     const username = ref('') 
@@ -9,6 +10,7 @@
 
     const error = ref('')
     const success = ref('')
+    const router = useRouter()
 
     // 3. Replace the onClick function
     async function onClick() {
@@ -21,19 +23,40 @@
             password: password.value
         }
 
+        const newProfile = {
+            email: email.value,
+            username: username.value,
+        }
+
         try {
             // 4. Call your backend's register route
             const response = await axios.post('http://localhost:5000/api/users', newUser)
             console.log('server response:', response.data);
-            alert('New User Created Succesfully');
+            const profileResponse = await axios.post('http://localhost:5000/api/profiles', newProfile)
 
-            // 5. Handle success
-            success.value = `User ${response.data.name} created! You can now sign in.`;
+            // After successful signup, auto-login the user
+            const loginResponse = await axios.post('http://localhost:5000/api/login', {
+                username: username.value,
+                password: password.value
+            })
+
+            // Store the JWT token
+            const token = loginResponse.data.token
+            localStorage.setItem('token', token)
+
+            // Notify the app about auth change so header updates
+            window.dispatchEvent(new Event('authChanged'))
+
+            // 5. Handle success and redirect
+            success.value = `Welcome ${username.value}! Your account has been created.`;
             
             // Clear the form
             email.value = ''
             username.value = ''
             password.value = ''
+
+            // Redirect to homepage
+            router.push('/')
 
         } catch (err: any) {
             // 6. Handle errors (like "User already exists")
