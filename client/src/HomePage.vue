@@ -1,7 +1,128 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const homePage = ref('home')
+const username = ref('')
+
+// === FAQ DATA ===
+const faqList = ref([
+  {
+    question: "What is GroupHive?",
+    answer: "GroupHive is a social platform designed to bring people together based on shared hobbies and passions. Unlike traditional media, we focus on real-world connections and community building.",
+    image: "/hoopers.webp", 
+    isOpen: false
+  },
+  {
+    question: "How do I use GroupHive?",
+    answer: "It's simple! Browse the categories to find a topic you love, or use the search bar. You can join existing hives or create your own to start hosting events.",
+    image: "/bookclub.jpg", 
+    isOpen: false
+  },
+  {
+    question: "Do I need an account to use GroupHive?",
+    answer: "Yes, to ensure the safety and quality of our communities, you need an account to join Hives and post content. However, you can browse public categories as a guest.",
+    image: "/park.jpg", 
+    isOpen: false
+  }
+])
+
+// === CATEGORIES DATA ===
+const categoriesList = ref([
+    { 
+      name: 'Basketball', 
+      type: 'Sports', 
+      image: '/basketball2.jpg', 
+      color: '#E91E63' 
+    },
+    { 
+      name: 'Art', 
+      type: 'Arts & Culture', 
+      image: '/artclub.jpg', 
+      color: '#9C27B0' 
+    },
+    { 
+      name: 'Coding', 
+      type: 'Tech', 
+      image: '/coders.jpg', 
+      color: '#2196F3' 
+    },
+    { 
+      name: 'Videogames', 
+      type: 'Gaming', 
+      image: '/Gamers.jpg', 
+      color: '#4CAF50' 
+    },
+    { 
+      name: 'Meditation', 
+      type: 'Spirituality', 
+      image: '/spiritual.jpg', 
+      color: '#00BCD4' 
+    },
+    { 
+      name: 'Open-minded', 
+      type: 'Community', 
+      image: '/openminded.jpg', 
+      color: '#FF9800' 
+    }
+])
+
+
+// Reference for the FAQ section HTML element to track scrolling
+const faqSectionRef = ref<HTMLElement | null>(null)
+
+function toggleFaq(index: number) {
+  // Toggle the clicked item open/close
+  faqList.value[index].isOpen = !faqList.value[index].isOpen
+}
+
+// Decode JWT token to extract username
+function decodeToken(token: string): any {
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) return null
+    const payload = parts[1]
+    const decoded = JSON.parse(atob(payload))
+    return decoded
+  } catch (err) {
+    console.error('Failed to decode token:', err)
+    return null
+  }
+}
+
+// Function to update username from token
+function updateUsername() {
+  const token = localStorage.getItem('token')
+  if (token) {
+    const decoded = decodeToken(token)
+    if (decoded && decoded.user && decoded.user.username) {
+      username.value = decoded.user.username
+    }
+  } else {
+    username.value = ''
+  }
+}
+
+onMounted(() => {
+  updateUsername()
+  window.addEventListener('authChanged', updateUsername)
+
+  // === SCROLL ANIMATION LOGIC ===
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible')
+      }
+    })
+  }, { threshold: 0.2 }) 
+
+  if (faqSectionRef.value) {
+    observer.observe(faqSectionRef.value)
+  }
+})
+
+onUnmounted(() => {
+  window.removeEventListener('authChanged', updateUsername)
+})
 </script>
 
 <template>
@@ -11,7 +132,10 @@ const homePage = ref('home')
         <img src="/bookclub.jpg" alt="Book club meeting" class="side-image image-2">
         
         <div class="intro">
-            <div class="intro-main">
+            <div class="intro-main" v-if="username">
+                Welcome Back!! {{ username }} 🐝
+            </div>
+            <div class="intro-main" v-else>
                 Be a Part of the Hive! 🐝
             </div>
             <div class="intro-sub">
@@ -23,83 +147,98 @@ const homePage = ref('home')
         <img src="/park.jpg" alt="People in a park" class="side-image image-4">
     </div>
 
-
-
     <div class="home">
         <input type="text" class="search-bar" placeholder="Search..." />
     </div>
-
     
     <section class="categories-section light-theme-style">
       <div class="section-header">
-        <h2 class="section-title">Categories</h2>
+        <h2 class="section-title">Your Top Categories</h2>
         <button class="show-all-button">Show all</button>
       </div>
       
       <div class="categories-scroll-container">
         <div class="categories-list">
           
-          <!-- Category Item 1: Basketball -->
-          <div class="category-item">
-            <div class="category-icon-wrapper">
-              <!-- Basketball SVG Icon -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>
-            </div>
-            <p class="category-label">Basketball</p>
-            <p class="category-type">Sports</p> 
-          </div>
-          
-          <!-- Category Item 2: Music -->
-          <div class="category-item">
-            <div class="category-icon-wrapper">
-              <!-- Music SVG Icon -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-            </div>
-            <p class="category-label">Music</p>
-            <p class="category-type">Arts</p> 
-          </div>
-          
-          <!-- Category Item 3: Coding -->
-          <div class="category-item">
-            <div class="category-icon-wrapper">
-              <!-- Coding SVG Icon -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline><line x1="10" y1="20" x2="14" y2="4"></line></svg>
-            </div>
-            <p class="category-label">Coding</p>
-            <p class="category-type">Tech</p> 
-          </div>
-          
-          <!-- Category Item 4: Videogames -->
-          <div class="category-item">
-            <div class="category-icon-wrapper">
-              <!-- Videogames SVG Icon -->
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l-4 4v8a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-8l-4-4H6z"></path><path d="M12 18v-6"></path><path d="M15 15l-3-3-3 3"></path></svg>
-            </div>
-            <p class="category-label">Videogames</p>
-            <p class="category-type">Gaming</p> 
-          </div>
+            <div 
+                v-for="(category, index) in categoriesList" 
+                :key="index"
+                class="category-card"
+            >
+                <div class="card-image-wrapper">
+                    <img :src="category.image" :alt="category.name" class="card-bg-image">
+                    
+                    <div class="card-bee-icon">
+                        <img src="/beehive.png" alt="Icon" class="corner-png-icon">
+                    </div>
 
-          <!-- Category Item 5: More -->
-          <div class="category-item">
-            <div class="category-icon-wrapper">
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <div 
+                        class="card-title-strip" 
+                        :style="{ backgroundColor: category.color }"
+                    >
+                        {{ category.name }}
+                    </div>
+                </div>
+                <p class="category-type-subtext">{{ category.type }}</p>
             </div>
-            <p class="category-label">More</p>
-            <p class="category-type">Explore</p> 
-          </div>
 
         </div>
       </div>
     </section>
-    <!-- === END: UPDATED CATEGORIES SECTION === -->
+
+    <section ref="faqSectionRef" class="faq-section fade-in-section">
+      <h2 class="faq-title">Frequently Asked Questions</h2>
+      <div class="faq-container">
+        <div 
+          v-for="(faq, index) in faqList" 
+          :key="index" 
+          class="faq-item"
+        >
+          <div class="faq-question" @click="toggleFaq(index)">
+            <span>{{ faq.question }}</span>
+            <span class="faq-icon">{{ faq.isOpen ? '−' : '+' }}</span>
+          </div>
+          
+          <transition name="slide-fade">
+            <div v-show="faq.isOpen" class="faq-content">
+              <p class="faq-answer">{{ faq.answer }}</p>
+              <img :src="faq.image" alt="FAQ Visual" class="faq-image" />
+            </div>
+          </transition>
+        </div>
+      </div>
+    </section>
+
+    <footer class="official-footer">
+        
+        <div class="footer-socials">
+            <a href="https://discord.gg/cNS7sP35PG" target="_blank" class="social-link" title="Discord">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.419-2.1568 2.419zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.419-2.1568 2.419z"/></svg>
+            </a>
+
+            <a href="#" class="social-link" title="Instagram">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+
+            <a href="#" class="social-link" title="Facebook">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.791-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+
+            <a href="#" class="social-link" title="X (Twitter)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+        </div>
+
+        <div class="footer-copyright">
+            <img src="/beehive.png" alt="GroupHive Logo" class="footer-logo">
+            <span class="footer-text">© 2024 GroupHive. All rights reserved.</span>
+        </div>
+    </footer>
 
   </div>
 </template>
 
 <style scoped>
-    /* Removed the 'Shadows Into Light Two' font import, as it's no longer needed here */
-    /* @import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light+Two&display=swap'); */
-
     .homepage-container {
       padding: 0 30px 20px 30px; 
     }
@@ -110,17 +249,13 @@ const homePage = ref('home')
         justify-content: center;
         align-items: center;
     }
-    .join, .create {
-        font-family: Cambria;
-        font-size: 30px;
-        margin-top: 30px;
-    }
+    
    .intro {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        max-width: 50%; 
+        max-width: 60%; 
         text-align: center;
         color: #000000;
         position: relative; 
@@ -128,19 +263,20 @@ const homePage = ref('home')
     }
 
     .intro-main {
-        font-family: 'Lobster', cursive; /* Script font */
-        font-size: 48px; /* Larger text */
+        font-family: 'Lobster', cursive; 
+        font-size: 48px; 
         margin-bottom: 10px;
     }
 
     .intro-sub {
-        font-family: Cambria, sans-serif; /* Non-script font */
-        font-size: 22px; /* Smaller subtext */
+        font-family: Cambria, sans-serif; 
+        font-size: 22px; 
     }
     
     .search-bar {
         flex: none;
-        width: 400px;
+        width: 100%; 
+        max-width: 400px; 
         height: 30px;
         padding: 2px 12px;
         border-radius: 999px;
@@ -152,17 +288,16 @@ const homePage = ref('home')
         margin-bottom: 20px;
     }
 
-    /* === START: UPDATED CATEGORY STYLES (Light Theme Style) === */
+    /* === CATEGORY CSS === */
     .categories-section.light-theme-style {
-      background-color: #FFFFFF; /* Light background */
+      background-color: #FFFFFF; 
       padding: 20px 30px;
       margin-top: 40px; 
       margin-left: -30px;
       margin-right: -30px;
-      border-radius: 0;
-      color: #000000; /* Default text color for this section */
+      color: #000000; 
       font-family: Cambria, sans-serif;
-      border-top: 1px solid #ddd; /* Added border for separation */
+      border-top: 1px solid #ddd; 
       border-bottom: 1px solid #ddd;
     }
 
@@ -174,165 +309,303 @@ const homePage = ref('home')
     }
 
     .section-title {
-      font-size: 24px; /* Simple font size */
-      font-weight: bold; /* Simple bold weight */
-      color: #000000; /* Black color */
+      font-size: 24px; 
+      font-weight: bold; 
+      color: #000000; 
       margin: 0;
-      font-family: Cambria, sans-serif; /* Simple, non-handwritten font */
-      /* Removed all cursive/glow styles */
     }
 
     .show-all-button {
       background: none;
       border: none;
-      color: #555555; /* Dark grey for button text */
+      color: #555555; 
       font-size: 14px;
       font-weight: bold;
       cursor: pointer;
       padding: 5px 10px;
-      border-radius: 5px;
-      transition: color 0.2s ease;
-    }
-
-    .show-all-button:hover {
-      color: #000000; /* Black on hover */
     }
 
     .categories-scroll-container {
       overflow-x: auto;
       overflow-y: hidden;
       white-space: nowrap;
-      
       scrollbar-width: thin;
-      scrollbar-color: #ccc #f0f0f0; /* Light scrollbar */
-    }
-
-    /* Webkit (Chrome, Safari) scrollbar styling for light mode */
-    .categories-scroll-container::-webkit-scrollbar {
-      height: 8px;
-    }
-    .categories-scroll-container::-webkit-scrollbar-track {
-      background: #f0f0f0; /* Light track */
-      border-radius: 4px;
-    }
-    .categories-scroll-container::-webkit-scrollbar-thumb {
-      background-color: #ccc; /* Light thumb */
-      border-radius: 4px;
-    }
-    .categories-scroll-container::-webkit-scrollbar-thumb:hover {
-      background-color: #aaa;
+      scrollbar-color: #ccc #f0f0f0; 
+      padding-bottom: 15px; 
     }
 
     .categories-list {
       display: flex;
       flex-wrap: nowrap;
       gap: 24px;
-      padding-bottom: 10px;
     }
 
-    .category-item {
-      flex-basis: 150px;
-      flex-shrink: 0;
-      
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      
-      background-color: #f9f9f9; /* Very light grey item background */
-      border: 1px solid #eee; /* Light border */
-      border-radius: 8px;
-      padding: 16px;
-      
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease; /* Updated hover effect */
-      text-align: center;
-      min-height: 180px;
+    .category-card {
+        flex-basis: 160px; 
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: transform 0.2s ease;
     }
 
-    .category-item:hover {
-      transform: translateY(-5px); /* Add lift effect */
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Add shadow */
+    .category-card:hover {
+        transform: translateY(-5px);
     }
 
-    .category-icon-wrapper {
-      width: 100px;
-      height: 100px;
-      background-color: #f0f0f0; /* Light placeholder circle */
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 12px;
-      color: #333333; /* Darker icon color */
+    .card-image-wrapper {
+        position: relative;
+        width: 100%;
+        padding-bottom: 100%; 
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
-    .category-icon-wrapper svg {
-      width: 60px;
-      height: 60px;
+    .card-bg-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; 
     }
 
-    .category-label {
-      font-size: 16px;
-      font-weight: bold;
-      color: #333333; /* Dark text */
-      margin: 0;
-      white-space: normal;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 1;
-      -webkit-box-orient: vertical;
+    .card-bee-icon {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 28px; 
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
     }
 
-    .category-type {
-      font-size: 13px;
-      color: #777777; /* Medium grey for secondary text */
-      margin-top: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 100%;
+    .corner-png-icon {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); 
     }
 
+    .card-title-strip {
+        position: absolute;
+        bottom: 12px; 
+        left: 0;
+        color: white;
+        font-weight: bold;
+        font-size: 15px;
+        padding: 6px 12px 6px 8px;
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+        box-shadow: 2px 2px 4px rgba(0,0,0,0.25);
+        max-width: 90%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .category-type-subtext {
+        margin-top: 12px;
+        font-size: 14px;
+        color: #555;
+        font-weight: 600;
+        white-space: normal; 
+        line-height: 1.2;
+    }
+
+    /* Hero Section */
     .hero-section {
         position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 50px 0; /* Adds vertical space for the images */
-        min-height: 350px; /* Ensures container has height for positioned images */
+        width: 100%;
+        min-height: 65vh; 
         margin-bottom: -20px; 
+        overflow: hidden; 
     }
 
- .side-image {
+    .side-image {
         position: absolute;
-        width: 250px; 
+        width: 16vw; 
+        max-width: 300px; 
+        min-width: 120px; 
         height: auto; 
-        border: 3px solid #E6E6FA; /* Thin Light Lavender border */
+        border: 3px solid #E6E6FA; 
         border-radius: 12px; 
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12); 
-        z-index: 1; /* Places images behind the intro text */
+        z-index: 1; 
     }
 
-    /* --- Left Image Positions --- */
-    .image-1 {
-        top: 50px;
-        left: 5%; 
-    }
-    .image-2 {
-        top: 300px;
-        left: 5%;
+    .image-1 { top: 10%; left: 5%; }
+    .image-2 { top: 55%; left: 5%; }
+    .image-3 { top: 10%; right: 5%; }
+    .image-4 { top: 55%; right: 5%; }
+
+    /* === FAQ SECTION STYLES === */
+    .faq-section {
+      margin-top: 60px;
+      margin-bottom: 40px;
+      padding: 20px;
+      font-family: Cambria, sans-serif;
     }
 
-    /* --- Right Image Positions --- */
-    .image-3 {
-        top: 50px;
-        right: 5%; 
-    }
-    .image-4 {
-        top: 300px;
-        right: 5%;
+    .faq-title {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 30px;
     }
 
+    .faq-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 10px;
+    }
+
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 18px;
+      border-radius: 8px;
+      transition: background-color 0.2s;
+    }
+
+    .faq-question:hover {
+      background-color: #f0f0f0;
+    }
+
+    .faq-icon {
+      font-size: 24px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .faq-content {
+      display: flex;
+      align-items: center; 
+      justify-content: space-between;
+      gap: 20px; 
+      padding: 15px;
+      background-color: #fff;
+    }
+
+    .faq-answer {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 0;
+      color: #333;
+      flex: 1; 
+      font-style: italic;
+      font-weight: bold;
+    }
+
+    .faq-image {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      flex-shrink: 0; 
+    }
+
+    .faq-item:nth-child(even) .faq-content {
+        flex-direction: row-reverse;
+        text-align: right; 
+    }
+
+
+    /* Animation Classes */
+    .fade-in-section {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 1s ease-out, transform 1s ease-out;
+    }
+
+    .fade-in-section.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .slide-fade-enter-active,
+    .slide-fade-leave-active {
+      transition: all 0.3s ease-out;
+      overflow: hidden;
+      max-height: 500px; 
+      opacity: 1;
+    }
+
+    .slide-fade-enter-from,
+    .slide-fade-leave-to {
+      max-height: 0;
+      opacity: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    /* === UPDATED FOOTER STYLES === */
+    .official-footer {
+      display: flex;
+      flex-direction: column; /* Stack socials on top of copyright */
+      justify-content: center;
+      align-items: center;
+      padding: 20px 0;
+      margin-top: 40px; 
+      border-top: 1px solid #eee; 
+      font-family: Cambria, sans-serif;
+    }
+
+    /* Social Icons Row */
+    .footer-socials {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px; /* Spacing between icons and copyright text */
+    }
+
+    .social-link {
+        color: #000; /* Black by default */
+        transition: transform 0.2s ease, color 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .social-link svg {
+        width: 24px;
+        height: 24px;
+        fill: currentColor; /* Inherits color from parent */
+    }
+
+    /* Hover Effect: Turns Gold */
+    .social-link:hover {
+        color: #D4AF37; /* Metallic Gold */
+        transform: translateY(-2px); /* Slight lift */
+    }
+
+    /* Copyright Section */
+    .footer-copyright {
+        display: flex;
+        align-items: center;
+    }
+
+    .footer-logo {
+      width: 20px; 
+      height: 20px;
+      object-fit: contain;
+      margin-right: 8px; 
+      opacity: 0.7; 
+    }
+
+    .footer-text {
+      font-size: 12px; 
+      color: #777; 
+    }
 </style>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-    import { ref } from 'vue'
-    import { createApp } from 'vue'
-    import App from './App.vue'
+    import { ref, onMounted } from 'vue'
+    import { useRouter } from 'vue-router'
     import HomePage from './HomePage.vue'
     import SignIn from './SignIn.vue'
     import SignUp from './SignUp.vue'
@@ -17,9 +16,49 @@
     const createEvent = ref(false)
     const profile = ref(false)
     //Add user tracking and log out
-    const noUser = ref(false)
-    function logout() {
-        noUser.value = true;
+    const noUser = ref(true)
+
+    const router = useRouter()
+
+    // On mount, check for a saved token and update header accordingly
+    function updateAuthState() {
+        const token = localStorage.getItem('token')
+        // if token exists, user is considered logged in
+        noUser.value = !token
+    }
+
+    onMounted(() => {
+        updateAuthState()
+
+        // Listen for auth changes (sign in / sign out) from other components
+        window.addEventListener('authChanged', updateAuthState)
+    })
+
+    // Cleanup listener when component unmounts
+    import { onUnmounted } from 'vue'
+    onUnmounted(() => {
+        window.removeEventListener('authChanged', updateAuthState)
+    })
+
+    async function logout() {
+        try {
+            await fetch('/api/logout', { method: 'POST', credentials: 'include' })
+        } catch (err) {
+            // Non-fatal: continue to clear client state even if request fails
+            console.error('Logout request failed', err)
+        }
+
+        // Remove any client-side auth token
+        localStorage.removeItem('token')
+
+        // Update header state
+        noUser.value = true
+
+        // Dispatch event to update all components
+        window.dispatchEvent(new Event('authChanged'))
+
+        // Redirect to homepage (will show default "Be a Part of the Hive!" message)
+        router.push('/')
     }
 
 </script>

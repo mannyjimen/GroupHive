@@ -31,6 +31,43 @@
         }
     });
 
+    async function saveEvent(eventName: string) {
+        const token = localStorage.getItem('jwtToken');
+
+        if (!token) {
+            alert('You must be logged in to save an event.');
+            return;
+        }
+
+        try {
+            const response = await axios.patch('http://localhost:5000/api/profiles/save-event',
+                { eventName: eventName },
+                {
+                    headers: {
+                        'Authorization' : `Bearer ${token}`
+                    }
+                }
+            );
+
+            alert(`"${eventName}" successfully saved to your profile!`);
+            console.log('Save response:', response.data);
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                if (error.response.status === 401) {
+                    alert('Session expired, log in to save events!');
+                } else if (error.response.status === 404) {
+                    alert('Profile could not be found to save the event.');
+                } else if (error.response.status === 500 && error.response.data.details.includes('E11000')) {
+                    alert('You have already saved this event.');
+                }
+            } else {
+                alert('Network error occured.');
+            }
+
+            console.error('save event failutre:', error);
+        }
+    }
+
 </script>
 
 <template>
@@ -78,6 +115,8 @@
                  <div>Location: {{event.location}}</div>
                  <div>Date and Time: {{event.date}}</div>
                  <div>Number of People: {{event.numberPeople}}</div>
+
+                 <button class="saveButton" @click="saveEvent(event.name)">Save</button>
              </div>
          </div>
          <div v-else>
@@ -127,6 +166,16 @@
     background-size: cover;
     background-position: center; 
     background-repeat: no-repeat;
+}
+
+.saveButton {
+    font-family: Cambria;
+    font-size: 15px;
+    padding: 5px;
+    margin-right: 10px;
+    margin-top: 5px;
+    background: none;
+    border-radius: 5px;
 }
 
 .Music {
