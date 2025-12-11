@@ -32,7 +32,7 @@
     });
 
     async function saveEvent(eventName: string) {
-        const token = localStorage.getItem('jwtToken');
+        const token = localStorage.getItem('token');
 
         if (!token) {
             alert('You must be logged in to save an event.');
