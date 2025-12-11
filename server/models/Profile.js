@@ -18,6 +18,9 @@ const profileSchema = new mongoose.Schema ({
     savedEvents: [{
         eventName: String
     }],
+    postedEvents: [{
+        eventName: String
+    }],
     bio: {
         type: String
     },

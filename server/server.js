@@ -125,6 +125,9 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/api/events', authMiddleware, async (req,res) => {
   console.log("Called POST request for Events collection");
+
+  const loggedInUsername = req.user.username;
+
   try {
     //get name and email from request body
     const { name, category, description, location, date, people } = req.body;
@@ -137,6 +140,7 @@ app.post('/api/events', authMiddleware, async (req,res) => {
       return res.status(400).json({ message: 'Event already exists'});
     }
 
+    
     //create new user instance from model
     const event = new Event({
       name,
@@ -147,9 +151,25 @@ app.post('/api/events', authMiddleware, async (req,res) => {
       numberPeople: people
     });
 
-    console.log("created event")
-
     const createdEvent = await event.save();
+    console.log("created event")
+    
+    //updating user profile's postedEvents array
+    const updatedProfile = await Profile.findOneAndUpdate(
+      { username: loggedInUsername },
+      {
+        //$push adds new item to array
+        $push: {
+          postedEvents: { eventName: createdEvent.name}
+        }
+      },
+      { new : true}
+    );
+
+    if (!updatedProfile) {
+      await Event.findByIdAndDelete(createdEvent._id);
+      return res.status(404).json({message: 'Profile not found, event creation aborted.'});
+    }    
 
     //send the newly created user back as a response
     res.status(201).json(createdEvent);
@@ -297,6 +317,34 @@ app.get('/api/profiles/:username', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Server Error'});
   }
 })
+
+app.patch('/api/profiles/save-event', authMiddleware, async (req, res) => {
+  const { eventName } = req.body;
+  const loggedInUsername = req.user.username;
+
+  try{
+    const updatedProfile = await Profile.findOneAndUpdate(
+      { username: loggedInUsername },
+      {
+        $push: { savedEvents: { eventName: eventName } }
+      },
+      { new: true}
+    );
+
+    if (!updatedProfile) {
+      return res.status(404).json({ message: 'User profile not found, cannot save event.'});
+    }
+
+    res.status(200).json({
+      message: 'Event successfully saved to profile.',
+      profile: updatedProfile
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({message: 'Server failed to update profile.'});
+  }
+});
 
 
 // --- Server Listening ---
