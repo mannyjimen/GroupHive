@@ -8,6 +8,7 @@
         username: string;
         realName: string;
         savedEvents: string[];
+        postedEvents: string[];
         bio: string;
         gender: string;
         location: string;
@@ -21,6 +22,8 @@
         date: string;
         numberPeople: number;
     }
+    const sevents = ref<Event[]>([])
+    const pevents = ref<Event[]>([])
     const events = ref<Event[]>([])
     const profile = ref<Profile| null>(null);
     const isLoading = ref(true)
@@ -72,8 +75,24 @@
         }
 
         try {
-            const response = await axios.get('http://localhost:5000/api/events');
-            events.value = response.data;
+            const requests = profile.value.savedEvents.map(event =>
+                axios.get(`http://localhost:5000/api/events/${event.eventName}`)
+            );
+            const responses = await Promise.all(requests);
+            sevents.value = responses.map(r => r.data);
+        } catch (err) {
+            console.error('Failed to fetch events', err);
+            error.value = 'Failed to load events, Please try again later.';
+        } finally {
+            isLoading.value = false;
+        }
+
+        try {
+            const requests = profile.value.postedEvents.map(event =>
+                axios.get(`http://localhost:5000/api/events/${event.eventName}`)
+            );
+            const responses = await Promise.all(requests);
+            pevents.value = responses.map(r => r.data);
         } catch (err) {
             console.error('Failed to fetch events', err);
             error.value = 'Failed to load events, Please try again later.';
@@ -108,6 +127,26 @@
         <div class="savedEvents">
             Events Saved
         </div>
+        <div class="eventsPage">
+            <div v-if="isLoading">
+                Loading events...
+            </div>
+            <div className="eventsDisplay" v-else-if="sevents.length > 0">
+                <div className="events" v-for="event in sevents">
+
+                    <div :class="['eventImage', event.category]"></div>
+
+                    <div>Name: {{event.name}}</div>
+                    <div>Description: {{event.description}}</div>
+                    <div>Location: {{event.location}}</div>
+                    <div>Date and Time: {{event.date}}</div>
+                    <div>Number of People: {{event.numberPeople}}</div>
+                </div>
+            </div>
+            <div v-else>
+                No events found.
+            </div>
+        </div>
         <div class="postedEvents">
             Events Posted
         </div>
@@ -115,8 +154,8 @@
             <div v-if="isLoading">
                 Loading events...
             </div>
-            <div className="eventsDisplay" v-else-if="events.length > 0">
-                <div className="events" v-for="event in events">
+            <div className="eventsDisplay" v-else-if="pevents.length > 0">
+                <div className="events" v-for="event in pevents">
 
                     <div :class="['eventImage', event.category]"></div>
 
