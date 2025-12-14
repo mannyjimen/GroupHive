@@ -92,9 +92,6 @@
             </div>
             </div>
         </div>
-        <div v-else-if="!searchQuery && hasSearched">
-            <p>Please enter an event.</p>
-        </div>
         <div v-else>
         </div>
       

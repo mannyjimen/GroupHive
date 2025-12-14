@@ -3,12 +3,17 @@
     import { createApp } from 'vue'
     import axios from 'axios'
 
+    interface EventRef {
+        _id: string
+        eventName: string
+    }
+
     interface Profile {
         email: string;
         username: string;
         realName: string;
-        savedEvents: string[];
-        postedEvents: string[];
+        savedEvents: EventRef[];
+        postedEvents: EventRef[];
         bio: string;
         gender: string;
         location: string;
@@ -75,6 +80,7 @@
         }
 
         try {
+            if(!profile.value) return
             const requests = profile.value.savedEvents.map(event =>
                 axios.get(`http://localhost:5000/api/events/${event.eventName}`)
             );
@@ -88,6 +94,7 @@
         }
 
         try {
+            if (!profile.value) return
             const requests = profile.value.postedEvents.map(event =>
                 axios.get(`http://localhost:5000/api/events/${event.eventName}`)
             );
