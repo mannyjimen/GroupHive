@@ -346,6 +346,48 @@ app.patch('/api/profiles/save-event', authMiddleware, async (req, res) => {
   }
 });
 
+app.put('/api/profiles/:username', authMiddleware, async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    // Security check
+    if (req.user.username !== username) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    // Get all potential fields from the request body
+    const { realName, bio, location, gender, age } = req.body;
+
+    // Build the update object dynamically
+    const updateFields = {};
+    if (realName !== undefined) updateFields.realName = realName;
+    if (bio !== undefined) updateFields.bio = bio;
+    if (location !== undefined) updateFields.location = location;
+    if (gender !== undefined) updateFields.gender = gender;
+    
+    // Special check for Age: 
+    // If it's a valid number, update it. If it's explicitly null/empty, we might want to unset it or leave it.
+    if (age !== undefined && age !== "") {
+        updateFields.age = age;
+    }
+
+    // Update the database
+    const updatedProfile = await Profile.findOneAndUpdate(
+      { username: username },
+      { $set: updateFields }, 
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedProfile) return res.status(404).json({ message: 'Profile not found' });
+
+    res.status(200).json(updatedProfile);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 
 app.post('/api/logout', (req, res) => {
   res.status(200).json({ message: 'Logged out' });
