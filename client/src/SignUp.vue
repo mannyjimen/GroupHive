@@ -7,6 +7,11 @@
     const email = ref('')
     const username = ref('') 
     const password = ref('')
+    const realName = ref('')
+    const bio = ref('')
+    const gender = ref('')
+    const location = ref('')
+    const age = ref('')
 
     const error = ref('')
     const success = ref('')
@@ -26,6 +31,11 @@
         const newProfile = {
             email: email.value,
             username: username.value,
+            realName: realName.value,
+            bio: bio.value,
+            gender: gender.value,
+            location: location.value,
+            age: age.value
         }
 
         try {
@@ -75,6 +85,12 @@
         <input class="email" v-model="email" placeholder="Email">
         <input class="user" v-model="username" placeholder="Username">
         <input class="pass" v-model="password" placeholder="Password">
+        <input class="box" v-model="realName" placeholder="Name">
+        <input class="box" v-model="bio" placeholder="Biography">
+        <input class="box" v-model="gender" placeholder="Gender">
+        <input class="box" v-model="location" placeholder="Location">
+        <input class="box" v-model="age" placeholder="Age" type="number">
+
         <button class="button" @click="onClick">Sign Up</button>
     </div>
 </template>
@@ -85,7 +101,7 @@
         font-size: 20px;
         margin: 0px 0px 50px 0px;
     }
-    .user, .pass, .email {
+    .user, .pass, .email, .box {
         font-family: Cambria;
         width: 200px;
         margin: 5px 0px 5px 0px; /*top,right,bottom,left*/
@@ -104,7 +120,7 @@
         padding: 10px;
         flex-direction: column;
         width: 300px;
-        height: 400px;
+        height: 500px;
         border-radius: 50px; 
         border: 1px solid black;
         outline: none;
