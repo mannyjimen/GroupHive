@@ -12,9 +12,27 @@ import jwt from 'jsonwebtoken'; import authMiddleware from './middleware/authMid
 connectDB();
 const app = express();
 
-// --- Middleware ---
-// A middleware to parse incoming JSON data
-app.use(cors());
+//defining users that are allowed to make api requests
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://placeholderurl.com'
+]
+
+// cors check user validity
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback (null, true);
+
+    if (allowedOrigins.indexOf(origin) == -1) {
+      const msg = 'CORS policy prevents access from this origin.'
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 // ROUTES
@@ -172,10 +190,13 @@ app.post('/api/events', authMiddleware, async (req,res) => {
     }    
 
     //send the newly created user back as a response
-    res.status(201).json(createdEvent);
+    res.status(201).json({
+      event: createdEvent,
+      profileUpdate: 'Event successfully linked to profile!'
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server Error'});
+    res.status(500).json({ message: 'Server Error', error: error.message});
   }
 });
 
