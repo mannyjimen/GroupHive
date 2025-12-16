@@ -24,6 +24,16 @@
     ]
 
     async function onClick() {
+
+        //getting token from storage
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            alert('You must be signed in to create an event!');
+            console.error('Authorization failed, JWT token not found in storage.');
+            return;
+        }
+
         //creating the object
         const eventData = {
             name: name.value,
@@ -37,7 +47,14 @@
         //axios call attempt
         try {
             //send post req
-            const response = await axios.post('http://localhost:5000/api/events', eventData)
+            const response = await axios.post('http://localhost:5000/api/events',
+                eventData,
+                {
+                    headers: {
+                        'Authorization' : `Bearer ${token}`
+                    }
+                }
+            );
             console.log('server response:', response.data);
             alert('event created successfully');
             
