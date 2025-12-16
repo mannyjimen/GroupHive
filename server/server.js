@@ -15,7 +15,7 @@ const app = express();
 //defining users that are allowed to make api requests
 const allowedOrigins = [
   'http://localhost:5173',
-  'http://placeholderurl.com'
+  'https://grouphive.netlify.app'
 ]
 
 // cors check user validity
