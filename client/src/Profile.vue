@@ -95,7 +95,7 @@
             };
 
             const username = profile.value.username;
-            await axios.put(`http://localhost:5000/api/profiles/${username}`, editForm.value, config);
+            await axios.put(`https://grouphive-hu65.onrender.com/api/profiles/${username}`, editForm.value, config);
 
             Object.assign(profile.value, editForm.value);
             
@@ -128,7 +128,7 @@
             
             // pass config to axios call
             const profileRes = await axios.get(
-                `http://localhost:5000/api/profiles/${currentUser.username}`,
+                `https://grouphive-hu65.onrender.com/api/profiles/${currentUser.username}`,
                 config
             );
             profile.value = profileRes.data;
@@ -140,7 +140,7 @@
         try {
             if(!profile.value) return
             const requests = profile.value.savedEvents.map(event =>
-                axios.get(`http://localhost:5000/api/events/${event.eventName}`)
+                axios.get(`https://grouphive-hu65.onrender.com/api/events/${event.eventName}`)
             );
             const responses = await Promise.all(requests);
             sevents.value = responses.map(r => r.data);
@@ -154,7 +154,7 @@
         try {
             if (!profile.value) return
             const requests = profile.value.postedEvents.map(event =>
-                axios.get(`http://localhost:5000/api/events/${event.eventName}`)
+                axios.get(`https://grouphive-hu65.onrender.com/api/events/${event.eventName}`)
             );
             const responses = await Promise.all(requests);
             pevents.value = responses.map(r => r.data);
@@ -267,10 +267,6 @@
                     <div>Location: {{event.location}}</div>
                     <div>Date and Time: {{event.date}}</div>
                     <div>Number of People: {{event.numberPeople}}</div>
-                    <div class="button">
-                        <button class="edit" @click="onClickEditEvent">Edit</button>
-                        <button class="delete" @click="onClickDeleteEvent">Delete</button>
-                    </div>
                 </div>
             </div>
             <div v-else>No events found.</div>
