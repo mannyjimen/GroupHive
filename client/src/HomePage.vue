@@ -146,10 +146,6 @@ onUnmounted(() => {
         <img src="/bar.jpg" alt="Friends at a bar" class="side-image image-3">
         <img src="/park.jpg" alt="People in a park" class="side-image image-4">
     </div>
-
-    <div class="home">
-        <input type="text" class="search-bar" placeholder="Search..." />
-    </div>
     
     <section class="categories-section light-theme-style">
       <div class="section-header">

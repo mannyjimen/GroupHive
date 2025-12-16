@@ -31,21 +31,17 @@
         const newProfile = {
             email: email.value,
             username: username.value,
-            realName: realName.value,
-            bio: bio.value,
-            gender: gender.value,
-            location: location.value,
-            age: age.value
+            realName: realName.value
         }
 
         try {
             // 4. Call your backend's register route
-            const response = await axios.post('http://localhost:5000/api/users', newUser)
+            const response = await axios.post('https://grouphive-hu65.onrender.com/api/users', newUser)
             console.log('server response:', response.data);
-            const profileResponse = await axios.post('http://localhost:5000/api/profiles', newProfile)
+            const profileResponse = await axios.post('https://grouphive-hu65.onrender.com/api/profiles', newProfile)
 
             // After successful signup, auto-login the user
-            const loginResponse = await axios.post('http://localhost:5000/api/login', {
+            const loginResponse = await axios.post('https://grouphive-hu65.onrender.com/api/login', {
                 username: username.value,
                 password: password.value
             })
@@ -85,11 +81,6 @@
         <input class="email" v-model="email" placeholder="Email">
         <input class="user" v-model="username" placeholder="Username">
         <input class="pass" v-model="password" placeholder="Password">
-        <input class="box" v-model="realName" placeholder="Name">
-        <input class="box" v-model="bio" placeholder="Biography">
-        <input class="box" v-model="gender" placeholder="Gender">
-        <input class="box" v-model="location" placeholder="Location">
-        <input class="box" v-model="age" placeholder="Age" type="number">
 
         <button class="button" @click="onClick">Sign Up</button>
     </div>
@@ -101,7 +92,7 @@
         font-size: 20px;
         margin: 0px 0px 50px 0px;
     }
-    .user, .pass, .email, .box {
+    .user, .pass, .email {
         font-family: Cambria;
         width: 200px;
         margin: 5px 0px 5px 0px; /*top,right,bottom,left*/
