@@ -21,7 +21,7 @@
 
     onMounted(async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/events');
+            const response = await axios.get('https://grouphive-hu65.onrender.com/api/events');
             events.value = response.data;
         } catch (err) {
             console.error('Failed to fetch events', err);
@@ -40,7 +40,7 @@
         }
 
         try {
-            const response = await axios.patch('http://localhost:5000/api/profiles/save-event',
+            const response = await axios.patch('https://grouphive-hu65.onrender.com/api/profiles/save-event',
                 { eventName: eventName },
                 {
                     headers: {
@@ -91,9 +91,6 @@
                 </div>
             </div>
             </div>
-        </div>
-        <div v-else-if="!searchQuery && hasSearched">
-            <p>Please enter an event.</p>
         </div>
         <div v-else>
         </div>

@@ -47,7 +47,7 @@
         //axios call attempt
         try {
             //send post req
-            const response = await axios.post('http://localhost:5000/api/events',
+            const response = await axios.post('https://grouphive-hu65.onrender.com/api/events',
                 eventData,
                 {
                     headers: {
