@@ -1,41 +1,21 @@
 <script setup lang="ts">
-    import { ref, onMounted } from 'vue'
+    import { ref, onMounted, onUnmounted } from 'vue'
     import { useRouter } from 'vue-router'
-    import HomePage from './HomePage.vue'
-    import SignIn from './SignIn.vue'
-    import SignUp from './SignUp.vue'
-    import SearchPage from './SearchPage.vue'
-    import CreateEvent from './CreateEvent.vue'
-    import Profile from './Profile.vue'
 
     const titleClass = ref('title')
-    const main = ref(true)
-    const signInVar = ref(false)
-    const signUpVar = ref(false)
-    const searchPage = ref(false)
-    const createEvent = ref(false)
-    const profile = ref(false)
-    //Add user tracking and log out
     const noUser = ref(true)
-
     const router = useRouter()
 
-    // On mount, check for a saved token and update header accordingly
     function updateAuthState() {
         const token = localStorage.getItem('token')
-        // if token exists, user is considered logged in
         noUser.value = !token
     }
 
     onMounted(() => {
         updateAuthState()
-
-        // Listen for auth changes (sign in / sign out) from other components
         window.addEventListener('authChanged', updateAuthState)
     })
 
-    // Cleanup listener when component unmounts
-    import { onUnmounted } from 'vue'
     onUnmounted(() => {
         window.removeEventListener('authChanged', updateAuthState)
     })
@@ -44,28 +24,21 @@
         try {
             await fetch('/api/logout', { method: 'POST', credentials: 'include' })
         } catch (err) {
-            // Non-fatal: continue to clear client state even if request fails
             console.error('Logout request failed', err)
         }
-
-        // Remove any client-side auth token
         localStorage.removeItem('token')
-
-        // Update header state
         noUser.value = true
-
-        // Dispatch event to update all components
         window.dispatchEvent(new Event('authChanged'))
-
-        // Redirect to homepage (will show default "Be a Part of the Hive!" message)
         router.push('/')
     }
-
 </script>
 
 <template>
+    <div class="background-container">
+        <div class="background-overlay"></div>
+    </div>
+
     <div class="header">
-        
         <router-link to="/">
             <button :class="titleClass">GroupHive</button>
         </router-link>
@@ -83,37 +56,75 @@
             <button class='sign1' @click="logout">Logout</button>
             <router-link to="/profile"><button class='sign2'>Profile</button></router-link>
         </div>
-        
     </div>
+    
     <div class="line"></div>
 
-    <router-view />
+    <div class="main-content">
+        <router-view />
+    </div>
     
 </template>
 
 <style scoped>
 
-@import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light+Two&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap');
 
 
 :global(body) {
-  background-color: #FFFFE0;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   min-height: 100vh;
+  /* Set a base color just in case the image takes a moment to load */
+  background-color: #FDF6E3; 
 }
 
-.title {
-  font-size: 30px; /* keep same size */
-  
-  /* === FONT IS LOBSTER === */
-  font-family: 'Lobster', cursive; 
-  font-style: normal; /* Removed italic, as Lobster is already a script */
-  
 
-  margin-left: 30px; 
-  margin-top: 20px;
+
+.background-container {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2; 
+    
+    background-image: url('/background.png');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+}
+
+
+.background-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+
+.main-content {
+    position: relative; 
+    z-index: 1;
+    width: 100%;
+}
+
+
+.title {
+  font-size: 30px; 
+  font-family: 'Inter', sans-serif; 
+  font-weight: 800;                
+  font-style: normal; 
+  
+  margin-left: 45px; 
+  margin-top: 20px;                 
+  
   border: none;
   background: none;
   padding: 10px;
@@ -147,11 +158,15 @@
     border-radius: 5px;
 }
 .header {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 .line {
+    position: relative;
+    z-index: 1;
     background: black;
     height: 1px;
     width: 100%;
