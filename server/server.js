@@ -12,9 +12,27 @@ import jwt from 'jsonwebtoken'; import authMiddleware from './middleware/authMid
 connectDB();
 const app = express();
 
-// --- Middleware ---
-// A middleware to parse incoming JSON data
-app.use(cors());
+//defining users that are allowed to make api requests
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://placeholderurl.com'
+]
+
+// cors check user validity
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback (null, true);
+
+    if (allowedOrigins.indexOf(origin) == -1) {
+      const msg = 'CORS policy prevents access from this origin.'
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 // ROUTES
@@ -125,6 +143,9 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/api/events', authMiddleware, async (req,res) => {
   console.log("Called POST request for Events collection");
+
+  const loggedInUsername = req.user.username;
+
   try {
     //get name and email from request body
     const { name, category, description, location, date, people } = req.body;
@@ -137,6 +158,7 @@ app.post('/api/events', authMiddleware, async (req,res) => {
       return res.status(400).json({ message: 'Event already exists'});
     }
 
+    
     //create new user instance from model
     const event = new Event({
       name,
@@ -147,15 +169,34 @@ app.post('/api/events', authMiddleware, async (req,res) => {
       numberPeople: people
     });
 
-    console.log("created event")
-
     const createdEvent = await event.save();
+    console.log("created event")
+    
+    //updating user profile's postedEvents array
+    const updatedProfile = await Profile.findOneAndUpdate(
+      { username: loggedInUsername },
+      {
+        //$push adds new item to array
+        $push: {
+          postedEvents: { eventName: createdEvent.name}
+        }
+      },
+      { new : true}
+    );
+
+    if (!updatedProfile) {
+      await Event.findByIdAndDelete(createdEvent._id);
+      return res.status(404).json({message: 'Profile not found, event creation aborted.'});
+    }    
 
     //send the newly created user back as a response
-    res.status(201).json(createdEvent);
+    res.status(201).json({
+      event: createdEvent,
+      profileUpdate: 'Event successfully linked to profile!'
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server Error'});
+    res.status(500).json({ message: 'Server Error', error: error.message});
   }
 });
 
@@ -297,6 +338,76 @@ app.get('/api/profiles/:username', authMiddleware, async (req, res) => {
     res.status(500).json({ message: 'Server Error'});
   }
 })
+
+app.patch('/api/profiles/save-event', authMiddleware, async (req, res) => {
+  const { eventName } = req.body;
+  const loggedInUsername = req.user.username;
+
+  try{
+    const updatedProfile = await Profile.findOneAndUpdate(
+      { username: loggedInUsername },
+      {
+        $push: { savedEvents: { eventName: eventName } }
+      },
+      { new: true}
+    );
+
+    if (!updatedProfile) {
+      return res.status(404).json({ message: 'User profile not found, cannot save event.'});
+    }
+
+    res.status(200).json({
+      message: 'Event successfully saved to profile.',
+      profile: updatedProfile
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({message: 'Server failed to update profile.'});
+  }
+});
+
+app.put('/api/profiles/:username', authMiddleware, async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    // Security check
+    if (req.user.username !== username) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    // Get all potential fields from the request body
+    const { realName, bio, location, gender, age } = req.body;
+
+    // Build the update object dynamically
+    const updateFields = {};
+    if (realName !== undefined) updateFields.realName = realName;
+    if (bio !== undefined) updateFields.bio = bio;
+    if (location !== undefined) updateFields.location = location;
+    if (gender !== undefined) updateFields.gender = gender;
+    
+    // Special check for Age: 
+    // If it's a valid number, update it. If it's explicitly null/empty, we might want to unset it or leave it.
+    if (age !== undefined && age !== "") {
+        updateFields.age = age;
+    }
+
+    // Update the database
+    const updatedProfile = await Profile.findOneAndUpdate(
+      { username: username },
+      { $set: updateFields }, 
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedProfile) return res.status(404).json({ message: 'Profile not found' });
+
+    res.status(200).json(updatedProfile);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
 
 app.post('/api/logout', (req, res) => {

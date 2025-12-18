@@ -149,7 +149,6 @@ onUnmounted(() => {
           <input type="text" class="search-bar" placeholder="Search..." @keyup.enter="goToJoin" />
       </div>
     </div>
-
     <section class="categories-section light-theme-style">
       <div class="section-header">
         <h2 class="section-title">Your Top Categories</h2>
